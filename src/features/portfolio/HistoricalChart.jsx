@@ -6,19 +6,20 @@ import {
 import { Camera, Trash2 } from 'lucide-react';
 import { Card, Button } from '../../components/ui';
 import { usePortfolioStore } from '../../store/usePortfolioStore';
-import { calculateTotalInUSD, formatValue, convertFromUSD } from '../../utils/calculation';
+import { calculateTotalInUSD, formatCurrency, convertFromUSD } from '../../utils/calculation';
 
 // ---------------------------------------------------------------------------
 // Custom tooltip
 // ---------------------------------------------------------------------------
 
-const CustomTooltip = ({ active, payload, label, displayCurrency, rate }) => {
+const CustomTooltip = ({ active, payload, label, displayCurrency }) => {
   if (!active || !payload?.length) return null;
+  // payload[0].value is already in displayCurrency (converted in chartData)
   return (
     <div className="rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-xs shadow-lg">
       <p className="text-zinc-500 mb-1">{label}</p>
       <p className="font-semibold text-zinc-100">
-        {formatValue(payload[0].value, displayCurrency, rate)}
+        {formatCurrency(payload[0].value, displayCurrency)}
       </p>
     </div>
   );
@@ -116,9 +117,9 @@ const HistoricalChart = () => {
                 }}
               />
               <Tooltip
-                content={
-                  <CustomTooltip displayCurrency={displayCurrency} rate={exchangeRates} />
-                }
+                content={(props) => (
+                  <CustomTooltip {...props} displayCurrency={displayCurrency} />
+                )}
               />
               <Line
                 type="monotone"
